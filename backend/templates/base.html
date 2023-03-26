@@ -1,25 +1,26 @@
 <!doctype html>
+<html>
+<head>
 <title>{% block title %}{% endblock %} - Flaskr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+</head>
 <body>
     <div class="full-body-container">
-        <div class="top-text">
-            <div class="google-colors">
-                <h1 id="google-c">C</h1>
-                <h1 id="google-s">S</h1>
-                <h1 id="google-4">4</h1>
-                <h1 id="google-3">3</h1>
-                <h1 id="google-0-1">0</h1>
-                <h1 id="google-0-2">0</h1>
+        
+            <div id="title">
+                <h1>Pantry-Pal!</h1>
+            </div>
+            <div id="description">
+                <p><strong><em>Welcome to Pantry Pal, where you will discover dream recipies to make from the ingredients in your own homes! With a simple click of a button, discover potential recipies, nutritional information, and reviews.</em></strong></p>
             </div>
             <div class="input-box" onclick="sendFocus()">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a Keeping up with the Kardashians episode" id="filter-text-val" onkeyup="filterText()">
+                <input placeholder="Enter your Ingredients for Potential Recipes!" id="filter-text-val" onkeyup="filterText()">
             </div>
-        </div>
+        
         <div id="answer-box">
 
         </div>
@@ -54,3 +55,4 @@
             
     </script>
 </body>
+</html>
