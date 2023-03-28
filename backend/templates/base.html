@@ -12,10 +12,15 @@
         
             <div id="title">
                 <h1>Pantry-Pal!</h1>
+            
             </div>
             <div id="description">
+                
                 <p><strong><em>Welcome to Pantry Pal, where you will discover dream recipies to make from the ingredients in your own homes! With a simple click of a button, discover potential recipies, nutritional information, and reviews.</em></strong></p>
             </div>
+            
+            <img class="style" src="{{ url_for('static', filename='images/undraw_diet_ghvw.svg') }}" />
+        
             <div class="input-box" onclick="sendFocus()">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Enter your Ingredients for Potential Recipes!" id="filter-text-val" onkeyup="filterText()">
@@ -30,8 +35,8 @@
 
         function answerBoxTemplate(title,titleDesc){
             return `<div class=''>
-                <h3 class='episode-title'>${title}</h3>
-                <p class='episode-desc'>${titleDesc}</p>
+                <h3 class='recipe-title'>${title}</h3>
+                <p class='recipe-desc'>${titleDesc}</p>
             </div>`
         }
 
@@ -47,7 +52,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.title,row.descr)
+                tempDiv.innerHTML = answerBoxTemplate(row.title,row.ingredients)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 

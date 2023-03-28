@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = os.getenv('PASSWORD')
+MYSQL_USER_PASSWORD = "Doubledutch1"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "kardashiandb"
 
@@ -30,10 +30,17 @@ CORS(app)
 
 # Sample search, the LIKE operator in this case is hard-coded, 
 # but if you decide to use SQLAlchemy ORM framework, 
-# there's a much better and cleaner way to do this
-def sql_search(episode):
-    query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
-    keys = ["id","title","descr"]
+# # there's a much better and cleaner way to do this
+# def sql_search(episode): #run the code below for every ingredient to get list of recipies that have ingredient. For loop for each ingredient that we get through episode input. Then get which recipies contain all of them
+#     query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
+#     keys = ["id","title","descr"] 
+#     data = mysql_engine.query_selector(query_sql)
+#     return json.dumps([dict(zip(keys,i)) for i in data])
+
+def sql_search(ingredient): #run the code below for every ingredient to get list of recipies that have ingredient. For loop for each ingredient that we get through episode input. Then get which recipies contain all of them
+    ingredient_list = [i.strip() for i in ingredient.split(',')] # split text into a list of episode titles
+    query_sql = f"""SELECT * FROM recipe_details WHERE {' AND '.join([f"LOWER(ingredients) LIKE '%%{i.lower()}%%'" for i in ingredient_list])}"""
+    keys =  ["id", "title", "min", "ingredients"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
