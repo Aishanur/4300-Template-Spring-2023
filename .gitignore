@@ -19,8 +19,4 @@ build/
 helpers/*
 
 .env
-<<<<<<< HEAD
-=======
-
->>>>>>> 2cca040 (Added the database and changed the name to match the title 'recipesdb')
 init.sql
