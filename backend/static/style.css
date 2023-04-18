@@ -62,10 +62,18 @@ html{
     margin-top:50px; 
 }
 
-.episode-title{
+.style{
+    width: 150px;
+    height: 150px;
+}
+.recipe-title{
     font-family: 'Kanit', sans-serif;
 }
 
-.episode-desc{
+.recipe-desc{
+    font-family: 'Montserrat', sans-serif;
+}
+
+.ratings-desc{
     font-family: 'Montserrat', sans-serif;
 }
