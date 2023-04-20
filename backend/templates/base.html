@@ -35,6 +35,7 @@
         <div id="answer-box">
 
         </div>
+        <button id="regenerate-button">Show More Recipes</button>
     </div>
 
     <script>
@@ -44,10 +45,40 @@
                 <h3 class='recipe-title'>${title}</h3>
                 <p class='recipe-desc'>${titleDesc}</p>
                 <p class= 'ratings-desc'>Rating: ${rating}</p>
+                <label><input type="checkbox" class="like-checkbox">
+            Like
+        </label>
                 
         
             </div>`
         }
+
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('like-checkbox')) {
+                const recipeTitle = event.target.closest('div').querySelector('.recipe-title').innerText;
+                console.log(`Liked ${recipeTitle}`);
+            }
+        });
+
+        document.getElementById("regenerate-button").addEventListener("click", function () {
+            const likedRecipes = document.querySelectorAll(".like-checkbox:checked");
+            const likedTitles = Array.from(likedRecipes).map(recipe => recipe.closest("div").querySelector(".recipe-title").textContent);
+
+            // make API call with the liked titles to get new recipes
+            fetch("/episodes?" + new URLSearchParams({ likedTitles: likedTitles.join(",") }).toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    // clear existing recipes
+                    document.getElementById("answer-box").innerHTML = "";
+
+                    // add new recipes
+                    data.forEach(row => {
+                        let tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.ingredients, row.ratings);
+                        document.getElementById("answer-box").appendChild(tempDiv);
+                    });
+                });
+        });
 
         function sendFocus() {
             document.getElementById('filter-text-val').focus()
@@ -61,7 +92,7 @@
                 .then((data) => data.forEach(row => {
 
                     let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title,row.ingredients, row.ratings)
+                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.ingredients, row.ratings)
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
 
