@@ -74,7 +74,7 @@
                     // add new recipes
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.title, row.ingredients, row.ratings);
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
@@ -92,7 +92,7 @@
                 .then((data) => data.forEach(row => {
 
                     let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.title, row.ingredients, row.ratings)
+                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating)
                     document.getElementById("answer-box").appendChild(tempDiv)
                 }));
 
