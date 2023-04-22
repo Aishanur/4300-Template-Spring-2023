@@ -30,7 +30,7 @@ CORS(app)
 
 def sql_search(ingredient): #run the code below for every ingredient to get list of recipies that have ingredient. For loop for each ingredient that we get through episode input. Then get which recipies contain all of them
     ingredient_list = [i.strip() for i in ingredient.split(',')] # split text into a list of episode titles
-    query_sql = f"""SELECT * FROM recipes_reviews WHERE {' AND '.join([f"LOWER(RecipeIngredientParts) LIKE '%%{i.lower()}%%'" for i in ingredient_list])} ORDER BY AvgRecipeRating DESC"""
+    query_sql = f"""SELECT * FROM recipes_reviews WHERE {' AND '.join([f"LOWER(RecipeIngredientParts) LIKE '%%{i.lower()}%%'" for i in ingredient_list])} ORDER BY AvgRecipeRating DESC LIMIT 10"""
     keys = ["ReviewId", "RecipeId", "ReviewAuthorId", "CurrentRating", "Review", "Name", "TotalTime", "DatePublished", "Description", "Image", "RecipeCategory", "Keywords", "RecipeIngredientQuantities", "RecipeIngredientParts", "ReviewCount", "Calories", "FatContent", "SaturatedFatContent", "CholesterolContent", "SodiumContent", "CarbohydrateContent", "FiberContent", "SugarContent", "ProteinContent", "RecipeInstructions", "AvgRecipeRating"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys, i)) for i in data])
