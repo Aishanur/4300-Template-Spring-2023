@@ -32,8 +32,13 @@
 
         <div class="input-box" onclick="sendFocus()">
             <img src="{{ url_for('static', filename='images/mag.png') }}" />
+            <!-- <input placeholder="Enter your Ingredients for Potential Recipes!" id="filter-text-val"
+                onkeyup="filterText()"> -->
             <input placeholder="Enter your Ingredients for Potential Recipes!" id="filter-text-val"
-                onkeyup="filterText()">
+                onkeyup="if (event.keyCode === 13) { search(); } else { filterText(); }">
+
+            <button onclick="search()">Search</button>
+
         </div>
 
         <div id="answer-box">
@@ -120,19 +125,32 @@
             document.getElementById('filter-text-val').focus()
         }
 
-        function filterText() {
-            document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+        // function filterText() {
+        //     document.getElementById("answer-box").innerHTML = ""
+        //     console.log(document.getElementById("filter-text-val").value)
+        //     fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+        //         .then((response) => response.json())
+        //         .then((data) => data.forEach(row => {
+
+        //             let tempDiv = document.createElement("div")
+        //             tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating)
+        //             document.getElementById("answer-box").appendChild(tempDiv)
+        //         }));
+
+        // }
+
+        function search() {
+            const searchValue = document.getElementById("filter-text-val").value;
+            document.getElementById("answer-box").innerHTML = "";
+            fetch("/episodes?" + new URLSearchParams({ title: searchValue }).toString())
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
-
-                    let tempDiv = document.createElement("div")
-                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating)
-                    document.getElementById("answer-box").appendChild(tempDiv)
+                    let tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating);
+                    document.getElementById("answer-box").appendChild(tempDiv);
                 }));
-
         }
+
 
 
     </script>
