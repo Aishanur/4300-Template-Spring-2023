@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 import math
 from edit_distance import edit_distance_search
+import text
 
 load_dotenv()
 
@@ -128,7 +129,7 @@ def sql_search(ingredient):
         id = sorted_scores[i][0]
         matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
         ingredient_parts = matching_recipe["RecipeIngredientParts"]
-        ingredients = ",".join(set(ingredient_parts[2:-1].split(",")))
+        ingredients = text.remove_c_parantheses(ingredient_parts)
         matching_recipe["RecipeIngredientParts"] = ingredients
         results.append(matching_recipe)
     return json.dumps(results)

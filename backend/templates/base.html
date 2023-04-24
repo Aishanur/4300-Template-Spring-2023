@@ -126,20 +126,6 @@
             document.getElementById('filter-text-val').focus()
         }
 
-        // function filterText() {
-        //     document.getElementById("answer-box").innerHTML = ""
-        //     console.log(document.getElementById("filter-text-val").value)
-        //     fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
-        //         .then((response) => response.json())
-        //         .then((data) => data.forEach(row => {
-
-        //             let tempDiv = document.createElement("div")
-        //             tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating)
-        //             document.getElementById("answer-box").appendChild(tempDiv)
-        //         }));
-
-        // }
-
         function search() {
             const searchValue = document.getElementById("filter-text-val").value;
             document.getElementById("answer-box").innerHTML = "";
