@@ -53,7 +53,8 @@
             return `<div class=''>
       <h3 class='recipe-title'>${title}</h3>
       <p class='recipe-desc'>${titleDesc}</p>
-      <p class= 'ratings-desc'>Rating: ${rating}</p>
+      <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)}</p>
+
 
       <button id="like-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-up"></i></button>
       <button id="dislike-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-down"></i></button>
