@@ -6,6 +6,7 @@ from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import os
 from dotenv import load_dotenv
 import math
+from edit_distance import edit_distance_search
 
 load_dotenv()
 
@@ -29,6 +30,7 @@ mysql_engine.load_file_into_db()
 app = Flask(__name__)
 CORS(app)
 
+# Get the list of recipes from the database
 def build_recipes():
     query_sql = f"""SELECT * FROM recipes_reviews"""
     keys = ["ReviewId", "RecipeId", "ReviewAuthorId", "CurrentRating", "Review", "Name", "TotalTime", "DatePublished", "Description", "Image", "RecipeCategory", "Keywords", "RecipeIngredientQuantities", "RecipeIngredientParts", "ReviewCount", "Calories", "FatContent", "SaturatedFatContent", "CholesterolContent", "SodiumContent", "CarbohydrateContent", "FiberContent", "SugarContent", "ProteinContent", "RecipeInstructions", "AvgRecipeRating"]
@@ -39,6 +41,7 @@ def build_recipes():
 
     for row in data:
         recipe_id = row[1]
+        # to avoid duplicate recipe appearances
         if recipe_id not in seen_recipe_ids:
             seen_recipe_ids.add(recipe_id)
             recipe = dict(zip(keys, row))
@@ -48,7 +51,14 @@ def build_recipes():
 
 recipes_list = build_recipes()
 
-def build_inv_idx():
+def get_all_ingredients(recipes_lst):
+    """
+    Params: 
+    {
+        recipe_lst: string list of all the recipes 
+    }
+    Returns: a set containing all ingredients
+    """
     recipes = recipes_list[1:]
     
     all_ingredients = []
@@ -56,8 +66,14 @@ def build_inv_idx():
         ingredients = ((recipe["RecipeIngredientParts"])[2:-1]).split(", ")
         all_ingredients += ingredients
 
-    ingredients_set = set(all_ingredients)
+    return set(all_ingredients)
 
+ingredients_set = get_all_ingredients(recipes_list)
+
+def build_inv_idx():
+    recipes = recipes_list[1:]
+    
+    # build a dictionary {ingredient: [recipes the ingredient appears in]}
     idx = {}
     for recipe in recipes:
         for ingredient in ingredients_set:
@@ -78,6 +94,8 @@ def compute_idf():
     N = 4548
     for ingredient in inv_idx:
         id_list = inv_idx[ingredient]
+        # Assign a non-zero idf if the ingredient appears in three documents or more and 
+        # the ingredient does not appear in > 90% of all the recipes
         if not (len(id_list) < 3 or len(id_list)/N > 0.90):
             idf[ingredient] = math.log(N / (1 + len(id_list)), 2)
         else:
@@ -88,9 +106,19 @@ idf = compute_idf()
    
 def sql_search(ingredient): 
     # Run the SQL query to retrieve matching recipes
+    # Get the ingredients from the input
     ingredient_list = [i.strip() for i in ingredient.split(', ')]
+
+    # Assign the importance of each recipe using the idf
     recipe_scores = {}
-    for ingredient in ingredient_list:
+    for input_ingredient in ingredient_list:
+        
+        ingredient = input_ingredient
+        if input_ingredient not in inv_idx:
+            # if input_ingredient is not a key in inv_idx, then find the closest ingredient
+            # using edit distance, and make ingredient equal to that
+            ingredient = edit_distance_search(input_ingredient, ingredients_set)
+
         for recipe_id in inv_idx[ingredient]:
             recipe_scores[recipe_id] = idf[ingredient] + recipe_scores.get(recipe_id, 0)
     sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
