@@ -5,6 +5,7 @@ from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 import os
 from dotenv import load_dotenv
+import math
 
 load_dotenv()
 
@@ -28,18 +29,80 @@ mysql_engine.load_file_into_db()
 app = Flask(__name__)
 CORS(app)
 
-def sql_search(ingredient):
-    ingredient_list = [i.strip() for i in ingredient.split(',')]
-    query_sql = f"""SELECT DISTINCT RecipeId, Name, Description, Image, RecipeCategory, RecipeIngredientParts, RecipeInstructions, AvgRecipeRating FROM recipes_reviews WHERE MATCH (RecipeIngredientParts) AGAINST ('{" ".join(ingredient_list)}' IN BOOLEAN MODE) ORDER BY MATCH (RecipeIngredientParts) AGAINST ('{" ".join(ingredient_list)}' IN BOOLEAN MODE) DESC LIMIT 10"""
+def build_recipes():
+    query_sql = f"""SELECT * FROM recipes_reviews"""
+    keys = ["ReviewId", "RecipeId", "ReviewAuthorId", "CurrentRating", "Review", "Name", "TotalTime", "DatePublished", "Description", "Image", "RecipeCategory", "Keywords", "RecipeIngredientQuantities", "RecipeIngredientParts", "ReviewCount", "Calories", "FatContent", "SaturatedFatContent", "CholesterolContent", "SodiumContent", "CarbohydrateContent", "FiberContent", "SugarContent", "ProteinContent", "RecipeInstructions", "AvgRecipeRating"]
     data = mysql_engine.query_selector(query_sql)
-    keys = ["RecipeId", "Name", "Description", "Image", "RecipeCategory", "RecipeIngredientParts", "RecipeInstructions", "AvgRecipeRating"]
-    results = []
+    
+    recipes = []
+    seen_recipe_ids = set()
+
     for row in data:
-        row_dict = dict(zip(keys, row))
-        ingredient_parts = row_dict["RecipeIngredientParts"]
+        recipe_id = row[1]
+        if recipe_id not in seen_recipe_ids:
+            seen_recipe_ids.add(recipe_id)
+            recipe = dict(zip(keys, row))
+            recipes.append(recipe)
+    
+    return recipes
+
+recipes_list = build_recipes()
+
+def build_inv_idx():
+    recipes = recipes_list[1:]
+    
+    all_ingredients = []
+    for recipe in recipes:
+        ingredients = ((recipe["RecipeIngredientParts"])[2:-1]).split(", ")
+        all_ingredients += ingredients
+
+    ingredients_set = set(all_ingredients)
+
+    idx = {}
+    for recipe in recipes:
+        for ingredient in ingredients_set:
+            if ingredient not in idx:
+                if ingredient in recipe["RecipeIngredientParts"]:
+                    idx[ingredient] = [recipe["RecipeId"]]
+                else:
+                    idx[ingredient] = []
+            else:
+                if ingredient in recipe["RecipeIngredientParts"]:
+                    idx[ingredient].append(recipe["RecipeId"])
+    return idx
+
+inv_idx = build_inv_idx()
+
+def compute_idf():
+    idf = {}
+    N = 4548
+    for ingredient in inv_idx:
+        id_list = inv_idx[ingredient]
+        if not (len(id_list) < 3 or len(id_list)/N > 0.90):
+            idf[ingredient] = math.log(N / (1 + len(id_list)), 2)
+        else:
+            idf[ingredient] = 0
+    return idf
+
+idf = compute_idf()
+   
+def sql_search(ingredient): 
+    # Run the SQL query to retrieve matching recipes
+    ingredient_list = [i.strip() for i in ingredient.split(', ')]
+    recipe_scores = {}
+    for ingredient in ingredient_list:
+        for recipe_id in inv_idx[ingredient]:
+            recipe_scores[recipe_id] = idf[ingredient] + recipe_scores.get(recipe_id, 0)
+    sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
+
+    results = []
+    for i in range(10):
+        id = sorted_scores[i][0]
+        matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
+        ingredient_parts = matching_recipe["RecipeIngredientParts"]
         ingredients = ",".join(set(ingredient_parts[2:-1].split(",")))
-        row_dict["RecipeIngredientParts"] = ingredients
-        results.append(row_dict)
+        matching_recipe["RecipeIngredientParts"] = ingredients
+        results.append(matching_recipe)
     return json.dumps(results)
 
 @app.route("/")
