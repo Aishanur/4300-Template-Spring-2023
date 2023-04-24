@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 import math
 from edit_distance import edit_distance_search
+import re
 import text
 
 load_dotenv()
@@ -118,14 +119,22 @@ def sql_search(ingredient):
         if input_ingredient not in inv_idx:
             # if input_ingredient is not a key in inv_idx, then find the closest ingredient
             # using edit distance, and make ingredient equal to that
-            ingredient = edit_distance_search(input_ingredient, ingredients_set)
+            found = False
+            for key in inv_idx:
+                if re.search(r"\b{}\b".format(input_ingredient), key):
+                    ingredient = key
+                    found = True
+                    break
+                
+            if found == False:
+                ingredient = edit_distance_search(input_ingredient, ingredients_set)
 
         for recipe_id in inv_idx[ingredient]:
             recipe_scores[recipe_id] = idf[ingredient] + recipe_scores.get(recipe_id, 0)
     sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
 
     results = []
-    for i in range(10):
+    for i in range(min(len(sorted_scores), 10)):
         id = sorted_scores[i][0]
         matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
         ingredient_parts = matching_recipe["RecipeIngredientParts"]
