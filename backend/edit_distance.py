@@ -12,10 +12,7 @@ def deletion_cost(query, i):
     return 1
 
 def substitution_cost(query, message, i, j):
-    if query[i-1] == message[j-1]:
-        return 0
-    else:
-        return 1
+    return 2
 
 def edit_matrix(query, message, ins_cost_func, del_cost_func, sub_cost_func):
     """ Calculates the edit matrix
