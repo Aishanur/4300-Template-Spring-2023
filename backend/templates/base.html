@@ -49,53 +49,78 @@
 
     <script>
 
-        function answerBoxTemplate(title, titleDesc, rating) {
-            return `<div class=''>
-      <h3 class='recipe-title'>${title}</h3>
-      <p class='recipe-desc'>${titleDesc}</p>
-      <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)}</p>
-
-
-      <button id="like-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-up"></i></button>
-      <button id="dislike-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-down"></i></button>
-  </div>`
+        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews) {
+            return `<div class='recipe'>
+        <h3 class='recipe-title'>${title}</h3>
+        <p class='recipe-desc'>${titleDesc}</p>
+        <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)}</p>
+        <button onclick="showInstructions(this)">Show Recipe Instructions</button>
+        <div class='recipe-instructions hidden'>${instructions}</div>
+        <button onclick="showReviews(this)">Show Recipe Reviews</button>
+        <div class='recipe-reviews hidden'>${reviews}</div>
+        <button id="like-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-up"></i></button>
+        <button id="dislike-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-down"></i></button>
+    </div>`
         }
+
 
         function toggleThumbs(button) {
             const title = button.id.replace('like-', '').replace('dislike-', '');
-            if (button.classList.contains('thumbs-up')) {
-                // user is un-liking the recipe
-                button.classList.remove('thumbs-up');
+            if (button.classList.contains('btn-selected')) {
+                // user is un-liking/disliking the recipe
                 button.classList.remove('btn-selected');
+                button.classList.remove('thumbs-up');
+                button.classList.remove('thumbs-down');
             } else {
-                // user is liking the recipe
-                button.classList.add('thumbs-up');
+                // user is liking/disliking the recipe
                 button.classList.add('btn-selected');
-                // remove any dislike from this recipe
-                const dislikeButton = document.getElementById(`dislike-${title}`);
-                dislikeButton.classList.remove('btn-selected');
-                dislikeButton.classList.remove('thumbs-down');
+                if (button.id.startsWith('like-')) {
+                    button.classList.add('thumbs-up');
+                    // remove any dislike from this recipe
+                    const dislikeButton = document.getElementById(`dislike-${title}`);
+                    if (dislikeButton.classList.contains('btn-selected')) {
+                        dislikeButton.classList.remove('btn-selected');
+                        dislikeButton.classList.remove('thumbs-down');
+                    }
+                } else {
+                    button.classList.add('thumbs-down');
+                    // remove any like from this recipe
+                    const likeButton = document.getElementById(`like-${title}`);
+                    if (likeButton.classList.contains('btn-selected')) {
+                        likeButton.classList.remove('btn-selected');
+                        likeButton.classList.remove('thumbs-up');
+                    }
+                }
             }
         }
 
+        function showInstructions(button) {
+            const instructions = button.nextElementSibling;
+            if (instructions.classList.contains('hidden')) {
+                instructions.classList.remove('hidden');
+                button.textContent = 'Hide Recipe Instructions';
+            } else {
+                instructions.classList.add('hidden');
+                button.textContent = 'Show Recipe Instructions';
+            }
+        }
+
+        function showReviews(button) {
+            const reviews = button.nextElementSibling;
+            if (reviews.classList.contains('hidden')) {
+                reviews.classList.remove('hidden');
+                button.textContent = 'Hide Recipe Reviews';
+            } else {
+                reviews.classList.add('hidden');
+                button.textContent = 'Show Recipe Reviews';
+            }
+        }
+
+
+
         document.addEventListener('click', function (event) {
-            if (event.target.classList.contains('fa-thumbs-up')) {
+            if (event.target.classList.contains('fa-thumbs-up') || event.target.classList.contains('fa-thumbs-down')) {
                 const button = event.target.parentElement;
-                toggleThumbs(button);
-                const title = button.id.replace('like-', '');
-                button.classList.toggle('thumbs-up');
-                button.classList.toggle('btn-selected');
-                const dislikeButton = document.getElementById(`dislike-${title}`);
-                dislikeButton.classList.remove('btn-selected');
-                dislikeButton.classList.remove('thumbs-down');
-            } else if (event.target.classList.contains('fa-thumbs-down')) {
-                const button = event.target.parentElement;
-                const title = button.id.replace('dislike-', '');
-                button.classList.toggle('thumbs-down');
-                button.classList.toggle('btn-selected');
-                const likeButton = document.getElementById(`like-${title}`);
-                likeButton.classList.remove('btn-selected');
-                likeButton.classList.remove('thumbs-up');
                 toggleThumbs(button);
             }
         });
@@ -116,7 +141,7 @@
                     // add new recipes
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating);
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
@@ -133,7 +158,7 @@
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
                     let tempDiv = document.createElement("div");
-                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating);
+                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review);
                     document.getElementById("answer-box").appendChild(tempDiv);
                 }));
         }
