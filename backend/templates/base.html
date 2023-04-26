@@ -49,11 +49,59 @@
 
     <script>
 
-        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews) {
+        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber ) {
             return `<div class='recipe'>
         <h3 class='recipe-title'>${title}</h3>
-        <p class='recipe-desc'>${titleDesc}</p>
+        <p class='recipe-desc'>Ingredients: ${titleDesc}</p>
         <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)}</p>
+        <div class="nutrition-toggle">
+            <button onclick="toggleNutritionTable(this)">Show Nutrition Information</button>
+      <table class="hide-nutrition"><thead>
+    <tr>
+      <th>Nutrition</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Calories</td>
+      <td>${calorie}</td>
+    </tr>
+    <tr>
+      <td>Fat</td>
+      <td>${fat}</td>
+    </tr>
+    <tr>
+      <td>Saturated Fat</td>
+      <td>${saturatedfat}</td>
+    </tr>
+    <tr>
+      <td>Sugar</td>
+      <td>${sugar}</td>
+    </tr>
+    <tr>
+      <td>Protein</td>
+      <td>${protein}</td>
+    </tr>
+    <tr>
+      <td>Sodium</td>
+      <td>${sodium}</td>
+    </tr>
+    <tr>
+      <td>Cholesterol</td>
+      <td>${cholesterol}</td>
+    </tr>
+    <tr>
+      <td>Carbohydrates</td>
+      <td>${carbohydrate}</td>
+    </tr>
+    <tr>
+      <td>Fiber</td>
+      <td>${fiber}</td>
+    </tr>
+    
+  </tbody>
+</table>
         <button onclick="showInstructions(this)">Show Recipe Instructions</button>
         <div class='recipe-instructions hidden'>${instructions}</div>
         <button onclick="showReviews(this)">Show Recipe Reviews</button>
@@ -105,7 +153,18 @@
             dislikeBtn.classList.add("btn-selected");
             likeBtn.classList.remove("btn-selected");
         }
-
+        function toggleNutritionTable(button) {
+            const nutritionTable = button.nextElementSibling;
+            if (nutritionTable.classList.contains('hide-nutrition')) {
+                nutritionTable.classList.remove('hide-nutrition');
+                nutritionTable.classList.add('show-nutrition');
+                button.textContent = 'Hide Nutrition Details';
+            } else {
+                nutritionTable.classList.remove('show-nutrition');
+                nutritionTable.classList.add('hide-nutrition');
+                button.textContent = 'Show Nutrition Details';
+            }
+        }
 
 
         function showInstructions(button) {
@@ -130,14 +189,14 @@
             }
         }
 
-
-
-
-
-
+        function toggleNutrition(dropdown) {
+            const nutritionTable = dropdown.nextElementSibling;
+            dropdown.classList.toggle("active");
+            nutritionTable.classList.toggle("hidden");
+        }
         document.getElementById("regenerate-button").addEventListener("click", function () {
-            const likedRecipes = document.querySelectorAll(".thumbs-up");
-            const dislikedRecipes = document.querySelectorAll(".thumbs-down");
+            const likedRecipes = document.querySelectorAll(".fa-thumbs-up.btn-selected");
+            const dislikedRecipes = document.querySelectorAll(".fa-thumbs-down.btn-selected");
             const likedTitles = Array.from(likedRecipes).map(recipe => recipe.closest(".recipe").querySelector(".recipe-title").textContent);
             const dislikedTitles = Array.from(dislikedRecipes).map(recipe => recipe.closest(".recipe").querySelector(".recipe-title").textContent);
 
@@ -151,7 +210,7 @@
                     // add new recipes
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review);
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
@@ -168,7 +227,7 @@
                 .then((response) => response.json())
                 .then((data) => data.forEach(row => {
                     let tempDiv = document.createElement("div");
-                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review);
+                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
                     document.getElementById("answer-box").appendChild(tempDiv);
                 }));
         }
