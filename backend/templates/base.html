@@ -58,41 +58,30 @@
         <div class='recipe-instructions hidden'>${instructions}</div>
         <button onclick="showReviews(this)">Show Recipe Reviews</button>
         <div class='recipe-reviews hidden'>${reviews}</div>
-        <button id="like-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-up"></i></button>
-        <button id="dislike-${title}" onclick="toggleThumbs(this)"><i class="fa fa-thumbs-down"></i></button>
+         <button id="like" onclick="likeRecipe(this)"><i class="fa fa-thumbs-up"></i></button>
+    <button id="dislike" onclick="dislikeRecipe(this)"><i class="fa fa-thumbs-down"></i></button>
     </div>`
         }
 
-
-        function toggleThumbs(button) {
-            const title = button.id.replace('like-', '').replace('dislike-', '');
-            if (button.classList.contains('btn-selected')) {
-                // user is un-liking/disliking the recipe
-                button.classList.remove('btn-selected');
-                button.classList.remove('thumbs-up');
-                button.classList.remove('thumbs-down');
-            } else {
-                // user is liking/disliking the recipe
-                button.classList.add('btn-selected');
-                if (button.id.startsWith('like-')) {
-                    button.classList.add('thumbs-up');
-                    // remove any dislike from this recipe
-                    const dislikeButton = document.getElementById(`dislike-${title}`);
-                    if (dislikeButton.classList.contains('btn-selected')) {
-                        dislikeButton.classList.remove('btn-selected');
-                        dislikeButton.classList.remove('thumbs-down');
-                    }
-                } else {
-                    button.classList.add('thumbs-down');
-                    // remove any like from this recipe
-                    const likeButton = document.getElementById(`like-${title}`);
-                    if (likeButton.classList.contains('btn-selected')) {
-                        likeButton.classList.remove('btn-selected');
-                        likeButton.classList.remove('thumbs-up');
-                    }
-                }
-            }
+        function likeRecipe(button) {
+            const likeBtn = button;
+            const dislikeBtn = button.nextElementSibling;
+            // add the btn-selected class to the like button
+            likeBtn.classList.add("btn-selected");
+            // remove the btn-selected class from the dislike button (if it exists)
+            dislikeBtn.classList.remove("btn-selected");
         }
+
+        function dislikeRecipe(button) {
+            const dislikeBtn = button;
+            const likeBtn = button.previousElementSibling;
+            // add the btn-selected class to the dislike button
+            dislikeBtn.classList.add("btn-selected");
+            // remove the btn-selected class from the like button (if it exists)
+            likeBtn.classList.remove("btn-selected");
+        }
+
+
 
         function showInstructions(button) {
             const instructions = button.nextElementSibling;
@@ -118,12 +107,8 @@
 
 
 
-        document.addEventListener('click', function (event) {
-            if (event.target.classList.contains('fa-thumbs-up') || event.target.classList.contains('fa-thumbs-down')) {
-                const button = event.target.parentElement;
-                toggleThumbs(button);
-            }
-        });
+
+
 
         document.getElementById("regenerate-button").addEventListener("click", function () {
             const likedRecipes = document.querySelectorAll(".thumbs-up");
@@ -166,6 +151,8 @@
 
 
     </script>
+
+
 </body>
 
 </html>
