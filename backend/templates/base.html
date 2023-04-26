@@ -63,21 +63,46 @@
     </div>`
         }
 
+        // function likeRecipe(button) {
+        //     const likeBtn = button;
+        //     const dislikeBtn = button.nextElementSibling;
+        //     // add the btn-selected class to the like button
+        //     likeBtn.classList.add("btn-selected");
+        //     // remove the btn-selected class from the dislike button (if it exists)
+        //     dislikeBtn.classList.remove("btn-selected");
+        // }
+
+        // function dislikeRecipe(button) {
+        //     const dislikeBtn = button;
+        //     const likeBtn = button.previousElementSibling;
+        //     // add the btn-selected class to the dislike button
+        //     dislikeBtn.classList.add("btn-selected");
+        //     // remove the btn-selected class from the like button (if it exists)
+        //     likeBtn.classList.remove("btn-selected");
+        // }
         function likeRecipe(button) {
             const likeBtn = button;
             const dislikeBtn = button.nextElementSibling;
-            // add the btn-selected class to the like button
+
+            if (likeBtn.classList.contains("btn-selected")) {
+                likeBtn.classList.remove("btn-selected");
+                return;
+            }
+
             likeBtn.classList.add("btn-selected");
-            // remove the btn-selected class from the dislike button (if it exists)
             dislikeBtn.classList.remove("btn-selected");
         }
 
         function dislikeRecipe(button) {
             const dislikeBtn = button;
             const likeBtn = button.previousElementSibling;
-            // add the btn-selected class to the dislike button
+
+            if (dislikeBtn.classList.contains("btn-selected")) {
+                dislikeBtn.classList.remove("btn-selected");
+                return;
+            }
+
             dislikeBtn.classList.add("btn-selected");
-            // remove the btn-selected class from the like button (if it exists)
             likeBtn.classList.remove("btn-selected");
         }
 
