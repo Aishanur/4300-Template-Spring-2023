@@ -142,6 +142,9 @@ def sql_search(ingredient):
         ingredient_parts = matching_recipe["RecipeIngredientParts"]
         ingredients = text.remove_c_parantheses(ingredient_parts)
         matching_recipe["RecipeIngredientParts"] = ingredients
+        instructions_ = matching_recipe["RecipeInstructions"]
+        instructions = text.remove_c_parantheses(instructions_)
+        matching_recipe["RecipeInstructions"] = instructions
         results.append(matching_recipe)
     return json.dumps(results)
 
@@ -154,4 +157,4 @@ def episodes_search():
     text = request.args.get("title")
     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)
