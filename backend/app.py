@@ -105,7 +105,19 @@ def compute_idf():
     return idf
 
 idf = compute_idf()
-   
+
+#Todo: function that creates a numpy matrix where rows represent recipes and columns represent ingredient idf vectors
+def create_tfidf_matrix():
+    pass
+
+tfidf_mat = create_tfidf_matrix()
+
+#Todo: function that converts query to idf ingredient vector (1D np array)
+def query_to_nparr():
+    pass
+
+query_vec = query_to_nparr()
+
 def sql_search(ingredient): 
     # Run the SQL query to retrieve matching recipes
     # Get the ingredients from the input
@@ -157,4 +169,4 @@ def episodes_search():
     text = request.args.get("title")
     return sql_search(text)
 
-app.run(debug=True)
+# app.run(debug=True)
