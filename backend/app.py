@@ -120,7 +120,7 @@ query_vec = query_to_nparr()
 
 def sql_search(ingredient): 
     # Run the SQL query to retrieve matching recipes
-    # Get the ingredients from the input
+    # Get the ingredients from the input, make all ingredients lowercase
     ingredient_list = [i.strip() for i in ingredient.split(', ')]
     ingredient_list = [ingredient.lower() for ingredient in ingredient_list]
     # Assign the importance of each recipe using the idf
