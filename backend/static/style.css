@@ -1,10 +1,10 @@
 html {
-    background-color: orange;
+    background-color: #CCD5AE;
 }
 
 .full-body-container {
     position: absolute;
-    top: 0;
+    top: 0; 
     left: 0;
     right: 0;
     bottom: 0;
@@ -14,23 +14,30 @@ html {
     justify-content: start;
     align-items: center;
     flex-direction: column;
-
 }
 
 
 #title {
-    color: rgb(255, 55, 0);
-    font-style: italic;
-    font-family: Arial, Helvetica, sans-serif;
+    color: #1f3923;
+    font-family: 'Didot', serif;
     font-size: 30px;
-
 }
 
 #description {
+    margin-top: -35px;
+    width: 75%;
     text-align: center;
-    font-size: 23px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 20px;
+    display: flex;
 }
 
+.style {
+    margin-top: 15px;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 25px;
+}
 
 .input-box {
     border-radius: 50px;
@@ -40,15 +47,13 @@ html {
     margin-top: 10px;
     padding: 12px;
     width: 600px;
-    background-color: rgb(232, 221, 16);
+    background-color: #FEFAE0;
 }
 
 .input-box img {
     height: 20px;
     width: 20px;
-
 }
-
 
 .input-box input {
     width: 100%;
@@ -56,19 +61,14 @@ html {
     font-size: 16px;
     border: none;
     outline: 0;
-    background-color: rgb(232, 221, 16);
+    background-color: #FEFAE0;
 }
 
 #answer-box {
     width: 700px;
     margin-top: 50px;
-
 }
 
-.style {
-    width: 150px;
-    height: 150px;
-}
 
 .recipe-title {
     font-family: 'Kanit', sans-serif;
@@ -89,7 +89,7 @@ html {
 
 .fa-thumbs-up,
 .fa-thumbs-down {
-    color: rgb(16, 48, 232);
+    color: #023020;
 }
 
 #regenerate-button {
