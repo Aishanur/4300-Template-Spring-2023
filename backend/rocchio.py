@@ -6,10 +6,9 @@ import text
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
 recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
 
-# We will also need a dictionary mapping recipe names to recipe ids
-recipe_name_to_id = {name:recipeid for name, recipeid in zip([d['RecipeId'] for d in recipes_data],
-                                                             [d['RecipeId'] for d in recipes_data])}
-recipe_id_to_name = {v:k for k,v in recipe_name_to_id.items()}
+# We will also need a dictionary mapping recipe ids to ingredients
+recipe_id_to_ingredients = {recipeid:ingredients for recipeid, ingredients in zip([d['RecipeId'] for d in recipes_data],
+                                                             [d['RecipeIngredientParts'] for d in recipes_data])}
 
 #Todo:
 #funct to convert tfidf to numpy matrix
@@ -23,18 +22,25 @@ def tf_idf(index, ingredient_set):
 
     ingredient_set: a set containing all ingredients present throughout the database
 
-    Returns:
+    Returns
+    ----------
     np_mat: a numpy matrix, where the rows represent the recipes and the 
     columns represent the ingredients
     """
     # initialize a tf-idf vectorizer
-    vectorizer = TfidfVectorizer(max_df=0.9)
-    # get a list of all the ingredients in the data. 
-    # However, this will duplicate because there are muptiple instances of recipe ids
-    # to resolve this, have a list of recipe IDs, since each recipe has a unique one
-    # instead of going through each element in recipes_data, go through each id
-    ingredients = [text.remove_c_parantheses(d['RecipeIngredientParts']).split(', ') for d in recipes_data]).toarray()
-    doc_by_vocab = tfidf_vec.fit_transform()
+    vectorizer = TfidfVectorizer(max_df=0.8)
+
+    # get a list of all the ingredients that appear throughout the data
+    nested_ingredients = [
+        # this would split all the ingredients based on the ', ' separating them, then add them into a new list
+        text.remove_c_parantheses(d['RecipeIngredientParts']).split(', ')
+        for ingredient in recipe_id_to_ingredients
+    ]
+
+    # join the nested lists with commas to be used with fit_transform
+    ingredients = [', '.join(lst) for lst in nested_ingredients]
+
+    return vectorizer.fit_transform(ingredients).toarray()
 
 
 #rocchio algorithm
