@@ -242,6 +242,7 @@
             document.getElementById('filter-text-val').focus()
         }
 
+
         // function search() {
         //     const filterText = document.getElementById("filter-text-val").value;
         //     if (!filterText) {
@@ -268,11 +269,17 @@
             document.getElementById("answer-box").innerHTML = "";
             fetch("/episodes?" + new URLSearchParams({ title: searchValue }).toString())
                 .then((response) => response.json())
-                .then((data) => data.forEach(row => {
-                    let tempDiv = document.createElement("div");
-                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
-                    document.getElementById("answer-box").appendChild(tempDiv);
-                }));
+                .then((data) => {
+                    const resultsCount = data.length;
+                    const resultsCountDiv = document.createElement("div");
+                    resultsCountDiv.innerHTML = `<p>${resultsCount} Recipes Found:</p>`;
+                    document.getElementById("answer-box").appendChild(resultsCountDiv);
+                    data.forEach(row => {
+                        let tempDiv = document.createElement("div");
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
+                        document.getElementById("answer-box").appendChild(tempDiv);
+                    });
+                });
         }
 
 
