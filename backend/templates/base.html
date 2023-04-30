@@ -45,7 +45,7 @@
 
     <script>
 
-        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber ) {
+        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber) {
             return `<div class='recipe'>
         <h3 class='recipe-title'>${title}</h3>
         <p class='recipe-desc'>Ingredients: ${titleDesc}</p>
@@ -217,6 +217,11 @@
         }
 
         function search() {
+            const filterText = document.getElementById("filter-text-val").value;
+            if (!filterText) {
+                alert("Please enter ingredients to search for recipes!");
+                return;
+            }
             const searchValue = document.getElementById("filter-text-val").value;
             document.getElementById("answer-box").innerHTML = "";
             fetch("/episodes?" + new URLSearchParams({ title: searchValue }).toString())
