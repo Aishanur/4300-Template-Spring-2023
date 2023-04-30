@@ -4,6 +4,21 @@ import numpy as np
 #funct to convert tfidf to numpy matrix
 #funct to convert query (list of ingredients) into np array of length y (total num unique ingredients in dataset)
 
+def inv_index_to_np(index, ingredient_set):
+    """
+    Parameters
+    ----------
+    index: a dictionary, of the form {ingredients: [recipes the ingredient appears in]}
+
+    ingredient_set: a set containing all ingredients present throughout the database
+
+    Returns:
+    np_mat: a numpy matrix, where the rows represent the recipes and the 
+    columns represent the ingredients
+    """
+    pass
+
+
 #rocchio algorithm
 def rocchio(query_vec, relevant, irrelevant, np_matrix, a=.3, b=.3, c=.8, clip = True):
     """
