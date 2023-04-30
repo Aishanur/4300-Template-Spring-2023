@@ -184,6 +184,32 @@
                 button.textContent = 'Show Recipe Reviews';
             }
         }
+        function filterText() {
+            // Get the input element
+            const input = document.getElementById('filter-text-val');
+
+            // Get the filter value and convert to lowercase
+            const filter = input.value.toLowerCase();
+
+            // Get all recipe items
+            const recipeItems = document.querySelectorAll('.recipe-item');
+
+            // Loop through all recipe items
+            recipeItems.forEach((item) => {
+                // Get the recipe title
+                const title = item.querySelector('.recipe-title').textContent.toLowerCase();
+
+                // Check if the filter value is contained in the recipe title
+                if (title.includes(filter)) {
+                    // Show the recipe item
+                    item.style.display = 'block';
+                } else {
+                    // Hide the recipe item
+                    item.style.display = 'none';
+                }
+            });
+        }
+
 
         function toggleNutrition(dropdown) {
             const nutritionTable = dropdown.nextElementSibling;
@@ -215,7 +241,7 @@
         function sendFocus() {
             document.getElementById('filter-text-val').focus()
         }
-
+        
         function search() {
             const filterText = document.getElementById("filter-text-val").value;
             if (!filterText) {
