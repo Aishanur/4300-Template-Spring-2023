@@ -33,9 +33,9 @@ mysql_engine.load_file_into_db()
 app = Flask(__name__)
 CORS(app)
 
-recipes_list = preprocessing.build_recipes(mysql_engine)
+recipes_data = preprocessing.build_recipes(mysql_engine)
 
-ingredients_set = preprocessing.get_all_ingredients(recipes_list)
+ingredients_set = preprocessing.get_all_ingredients(recipes_data)
 
 inv_idx = preprocessing.build_inv_idx(recipes_list, ingredients_set)
 

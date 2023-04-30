@@ -1,10 +1,21 @@
 import numpy as np
+from app import recipes_data
+from sklearn.feature_extraction.text import TfidfVectorize
+import text
+
+# Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
+recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
+
+# We will also need a dictionary mapping recipe names to recipe ids
+recipe_name_to_id = {name:recipeid for name, recipeid in zip([d['RecipeId'] for d in recipes_data],
+                                                             [d['RecipeId'] for d in recipes_data])}
+recipe_id_to_name = {v:k for k,v in recipe_name_to_id.items()}
 
 #Todo:
 #funct to convert tfidf to numpy matrix
 #funct to convert query (list of ingredients) into np array of length y (total num unique ingredients in dataset)
 
-def inv_index_to_np(index, ingredient_set):
+def tf_idf(index, ingredient_set):
     """
     Parameters
     ----------
@@ -16,7 +27,14 @@ def inv_index_to_np(index, ingredient_set):
     np_mat: a numpy matrix, where the rows represent the recipes and the 
     columns represent the ingredients
     """
-    pass
+    # initialize a tf-idf vectorizer
+    vectorizer = TfidfVectorizer(max_df=0.9)
+    # get a list of all the ingredients in the data. 
+    # However, this will duplicate because there are muptiple instances of recipe ids
+    # to resolve this, have a list of recipe IDs, since each recipe has a unique one
+    # instead of going through each element in recipes_data, go through each id
+    ingredients = [text.remove_c_parantheses(d['RecipeIngredientParts']).split(', ') for d in recipes_data]).toarray()
+    doc_by_vocab = tfidf_vec.fit_transform()
 
 
 #rocchio algorithm
