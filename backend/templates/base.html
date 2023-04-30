@@ -259,43 +259,21 @@
         //         }));
         // }
         function search() {
-            // reset the answer box and result count
-            const answerBox = document.getElementById("answer-box");
-            answerBox.innerHTML = "";
-            const resultCount = document.getElementById("result-count");
-            if (resultCount) {
-                resultCount.parentNode.removeChild(resultCount);
-            }
-
-            // get the filter text value
             const filterText = document.getElementById("filter-text-val").value;
-
-            // perform the search
-            const data = { "filter_text": filterText };
-            fetch("/search", {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // create a result count element and append it to the answer box
-                    const resultCount = document.createElement("p");
-                    resultCount.id = "result-count";
-                    resultCount.textContent = `${data.length} results found`;
-                    answerBox.appendChild(resultCount);
-
-                    // create and append recipe elements for each result
-                    data.forEach(result => {
-                        const recipe = answerBoxTemplate(result.title, result.ingredients, result.rating, result.instructions, result.reviews, result.calorie, result.fat, result.saturated_fat, result.sugar, result.protein, result.sodium, result.cholesterol, result.carbohydrate, result.fiber);
-                        answerBox.insertAdjacentHTML("beforeend", recipe);
-                    });
-                })
-                .catch(error => console.error(error));
+            if (!filterText) {
+                alert("Please enter ingredients to search for recipes!");
+                return;
+            }
+            const searchValue = document.getElementById("filter-text-val").value;
+            document.getElementById("answer-box").innerHTML = "";
+            fetch("/episodes?" + new URLSearchParams({ title: searchValue }).toString())
+                .then((response) => response.json())
+                .then((data) => data.forEach(row => {
+                    let tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
+                    document.getElementById("answer-box").appendChild(tempDiv);
+                }));
         }
-
 
 
 
