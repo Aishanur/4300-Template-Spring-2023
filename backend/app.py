@@ -9,7 +9,6 @@ import math
 from edit_distance import edit_distance_search
 import re
 import text
-import preprocessing
 
 load_dotenv()
 
@@ -36,31 +35,89 @@ CORS(app)
 recipes_data = preprocessing.build_recipes(mysql_engine)
 
 ingredients_set = preprocessing.get_all_ingredients(recipes_data)
+# Get the list of recipes from the database
+def build_recipes():
+    query_sql = f"""SELECT * FROM recipes_reviews"""
+    keys = ["ReviewId", "RecipeId", "ReviewAuthorId", "CurrentRating", "Review", "Name", "TotalTime", "DatePublished", "Description", "Image", "RecipeCategory", "Keywords", "RecipeIngredientQuantities", "RecipeIngredientParts", "ReviewCount", "Calories", "FatContent", "SaturatedFatContent", "CholesterolContent", "SodiumContent", "CarbohydrateContent", "FiberContent", "SugarContent", "ProteinContent", "RecipeInstructions", "AvgRecipeRating"]
+    data = mysql_engine.query_selector(query_sql)
+    
+    recipes = []
+    seen_recipe_ids = set()
 
-inv_idx = preprocessing.build_inv_idx(recipes_list, ingredients_set)
+    for row in data:
+        recipe_id = row[1]
+        # to avoid duplicate recipe appearances
+        if recipe_id not in seen_recipe_ids:
+            seen_recipe_ids.add(recipe_id)
+            recipe = dict(zip(keys, row))
+            recipes.append(recipe)
+    
+    return recipes
 
-idf = preprocessing.compute_idf(inv_idx)
+recipes_list = build_recipes()
 
-#Todo: function that creates a numpy matrix where rows represent recipes and columns represent ingredient idf vectors
-def create_tfidf_matrix():
-    pass
+def get_all_ingredients(recipes_lst):
+    """
+    Params: 
+    {
+        recipe_lst: string list of all the recipes 
+    }
+    Returns: a set containing all ingredients
+    """
+    recipes = recipes_list[1:]
+    
+    all_ingredients = []
+    for recipe in recipes:
+        ingredients = ((recipe["RecipeIngredientParts"])[2:-1]).split(", ")
+        all_ingredients += ingredients
 
-tfidf_mat = create_tfidf_matrix()
+    return set(all_ingredients)
 
-#Todo: function that converts query to idf ingredient vector (1D np array)
-def query_to_nparr():
-    pass
+ingredients_set = get_all_ingredients(recipes_list)
 
-query_vec = query_to_nparr()
+def build_inv_idx():
+    recipes = recipes_list[1:]
+    
+    # build a dictionary {ingredient: [recipes the ingredient appears in]}
+    idx = {}
+    for recipe in recipes:
+        for ingredient in ingredients_set:
+            if ingredient not in idx:
+                if ingredient in recipe["RecipeIngredientParts"]:
+                    idx[ingredient] = [recipe["RecipeId"]]
+                else:
+                    idx[ingredient] = []
+            else:
+                if ingredient in recipe["RecipeIngredientParts"]:
+                    idx[ingredient].append(recipe["RecipeId"])
+    return idx
 
+inv_idx = build_inv_idx()
+
+def compute_idf():
+    idf = {}
+    N = 4548
+    for ingredient in inv_idx:
+        id_list = inv_idx[ingredient]
+        # Assign a non-zero idf if the ingredient appears in three documents or more and 
+        # the ingredient does not appear in > 90% of all the recipes
+        if not (len(id_list) < 3 or len(id_list)/N > 0.90):
+            idf[ingredient] = math.log(N / (1 + len(id_list)), 2)
+        else:
+            idf[ingredient] = 0
+    return idf
+
+idf = compute_idf()
+   
 def sql_search(ingredient): 
     # Run the SQL query to retrieve matching recipes
-    # Get the ingredients from the input, make all ingredients lowercase
+    # Get the ingredients from the input
     ingredient_list = [i.strip() for i in ingredient.split(', ')]
-    ingredient_list = [ingredient.lower() for ingredient in ingredient_list]
+
     # Assign the importance of each recipe using the idf
     recipe_scores = {}
     for input_ingredient in ingredient_list:
+        
         ingredient = input_ingredient
         found = False
         if input_ingredient not in inv_idx:
@@ -71,14 +128,14 @@ def sql_search(ingredient):
                     ingredient = key
                     found = True
                     for recipe_id in inv_idx[ingredient]:
-                        recipe_scores[recipe_id] = idf[ingredient] + recipe_scores.get(recipe_id, 0)
+                        recipe_scores[recipe_id] = idf[ingredient] * 0.5 + recipe_scores.get(recipe_id, 0)
                 
             if found == False:
                 ingredient = edit_distance_search(input_ingredient, ingredients_set)
         
         if found == False:
             for recipe_id in inv_idx[ingredient]:
-                recipe_scores[recipe_id] = idf[ingredient] + recipe_scores.get(recipe_id, 0)
+                recipe_scores[recipe_id] = idf[ingredient] * 2 + recipe_scores.get(recipe_id, 0)
     sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
 
     results = []
@@ -103,4 +160,4 @@ def episodes_search():
     text = request.args.get("title")
     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)
