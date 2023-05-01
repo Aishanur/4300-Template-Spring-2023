@@ -34,7 +34,7 @@ app = Flask(__name__)
 CORS(app)
 
 recipes_data = preprocessing.build_recipes(mysql_engine)
-
+    
 ingredients_set = preprocessing.get_all_ingredients(recipes_data)
 # Get the list of recipes from the database
 recipes_list = preprocessing.build_recipes(mysql_engine)

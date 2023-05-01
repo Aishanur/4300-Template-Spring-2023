@@ -1,8 +1,8 @@
 import numpy as np
-from app import recipes_data
 from sklearn.feature_extraction.text import TfidfVectorizer
 import text
 import random
+from app import recipes_data
 
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
 recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
@@ -14,9 +14,6 @@ recipe_id_to_ingredients = {recipeid:ingredients for recipeid, ingredients in zi
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
 recipe_name_to_id = {recipe_name:recipe_id for recipe_name, recipe_id in zip([d['Name'] for d in recipes_data],
                                                              [d['RecipeId'] for d in recipes_data])}
-#Todo:
-#funct to convert tfidf to numpy matrix
-#funct to convert query (list of ingredients) into np array of length y (total num unique ingredients in dataset)
 
 def tf_idf(recipe_to_ingredients):
     """
