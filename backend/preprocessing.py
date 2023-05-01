@@ -1,4 +1,5 @@
 import math
+from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 
 def build_recipes(sql_engine):
     """

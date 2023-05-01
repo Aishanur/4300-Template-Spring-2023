@@ -14,13 +14,11 @@ recipe_id_to_ingredients = {recipeid:ingredients for recipeid, ingredients in zi
 #funct to convert tfidf to numpy matrix
 #funct to convert query (list of ingredients) into np array of length y (total num unique ingredients in dataset)
 
-def tf_idf(index, ingredient_set):
+def tf_idf(recipe_to_ingredients)):
     """
     Parameters
     ----------
-    index: a dictionary, of the form {ingredients: [recipes the ingredient appears in]}
-
-    ingredient_set: a set containing all ingredients present throughout the database
+    recipe_to_ingredients: A dictionary that maps recipe ids to its ingredients
 
     Returns
     ----------
@@ -33,8 +31,8 @@ def tf_idf(index, ingredient_set):
     # get a list of all the ingredients that appear throughout the data
     nested_ingredients = [
         # this would split all the ingredients based on the ', ' separating them, then add them into a new list
-        text.remove_c_parantheses(d['RecipeIngredientParts']).split(', ')
-        for ingredient in recipe_id_to_ingredients
+        text.remove_c_parantheses(ingredient['RecipeIngredientParts']).split(', ')
+        for ingredient in recipe_to_ingredients
     ]
 
     # join the nested lists with commas to be used with fit_transform
