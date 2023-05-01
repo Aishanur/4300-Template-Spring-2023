@@ -2,6 +2,7 @@ import numpy as np
 from app import recipes_data
 from sklearn.feature_extraction.text import TfidfVectorizer
 import text
+import random
 
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
 recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
@@ -10,11 +11,14 @@ recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['Reci
 recipe_id_to_ingredients = {recipeid:ingredients for recipeid, ingredients in zip([d['RecipeId'] for d in recipes_data],
                                                              [d['RecipeIngredientParts'] for d in recipes_data])}
 
+# Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
+recipe_name_to_id = {recipe_name:recipe_id for recipe_name, recipe_id in zip([d['Name'] for d in recipes_data],
+                                                             [d['RecipeId'] for d in recipes_data])}
 #Todo:
 #funct to convert tfidf to numpy matrix
 #funct to convert query (list of ingredients) into np array of length y (total num unique ingredients in dataset)
 
-def tf_idf(recipe_to_ingredients)):
+def tf_idf(recipe_to_ingredients):
     """
     Parameters
     ----------
@@ -34,9 +38,11 @@ def tf_idf(recipe_to_ingredients)):
         text.remove_c_parantheses(ingredient['RecipeIngredientParts']).split(', ')
         for ingredient in recipe_to_ingredients
     ]
+    # [[strawberries, milk], [bananas, milk]]
 
     # join the nested lists with commas to be used with fit_transform
     ingredients = [', '.join(lst) for lst in nested_ingredients]
+    # ["strawberries, milk", "bananas, milk"]
 
     return vectorizer.fit_transform(ingredients).toarray()
 
@@ -90,8 +96,11 @@ def rocchio(query_vec, relevant, irrelevant, np_matrix, a=.3, b=.3, c=.8, clip =
 
     return rocc_q
 
+# tfidf matrix with X rows (representing recipes) and Y columns (representing ingredients)
+tfidf_matrix = tf_idf(recipe_id_to_ingredients)
+
 #funct to output top 10 recipes with rocchio (cos-sim)
-def top10_with_rocchio(query_vec, relevant, irrelevant, tfidf_matrix, input_rocchio):
+def top10_with_rocchio(query_vec, relevant, irrelevant, input_rocchio):
     """
     Calculates cos-sim between updated query vector and all recipes containing user's initial list of ingredients
     and the updated query vector.
@@ -105,14 +114,12 @@ def top10_with_rocchio(query_vec, relevant, irrelevant, tfidf_matrix, input_rocc
     recipe_no: integer i where i indicates that this query represents the ith recipe (i.e. it is some valid index of 
     the tfidf_matrix)
     
-    relevant: list of pairs (recipe_no, ingredient vector) where recipe_no indicates the index of the recipe marked relevant,
+    relevant: list of pairs (recipe id, ingredient vector) where recipe_no indicates the index of the recipe marked relevant,
     and ingredient_vector is the corresponding np ingredient vector
     
-    irrelevant: list of pairs (recipe_no, ingredient vector) where recipe_no indicates the index of the recipe marked irrelevant,
+    irrelevant: list of pairs (recipe id, ingredient vector) where recipe_no indicates the index of the recipe marked irrelevant,
     and ingredient_vector is the corresponding np ingredient vector    
-    
-    tfidf_matrix: tfidf matrix with X rows (representing recipes) and Y columns (representing ingredients)
-    
+        
     input_rocchio: Rocchio algorithm implemented above
     
     Returns
@@ -148,3 +155,24 @@ def top10_with_rocchio(query_vec, relevant, irrelevant, tfidf_matrix, input_rocc
         rocc_rankings.update({ recipe_no: tfidf_matrix[recipe_no]})
 
     return rocc_rankings
+
+
+def recommend_recipes(liked_recipes, disliked_recipes):
+    relevant_lst = []
+    irrelevant_lst = []
+
+    for liked_recipe_name in liked_recipes:
+        liked_recipe_id = recipe_name_to_id[liked_recipe_name]
+        recipe_index = recipe_id_to_index[liked_recipe_id]
+        ingredient_vector = tfidf_matrix[recipe_index]
+        relevant_lst.append((liked_recipe_id, ingredient_vector))
+
+    for disliked_recipe_name in disliked_recipes:
+        disliked_recipe_id = recipe_name_to_id[disliked_recipe_name]
+        recipe_index = recipe_id_to_index[disliked_recipe_id]
+        ingredient_vector = tfidf_matrix[recipe_index]
+        irrelevant_lst.append((disliked_recipe_id, ingredient_vector))
+
+    query_tpl = random.choice(relevant_lst)
+    
+    return top10_with_rocchio(query_tpl[1], relevant_lst, irrelevant_lst, rocchio)
