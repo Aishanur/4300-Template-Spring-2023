@@ -253,7 +253,7 @@
                 .then((data) => {
                     const resultsCount = data.length;
                     const resultsCountDiv = document.createElement("div");
-                    resultsCountDiv.innerHTML = `<p>${resultsCount} Recipes Found:</p>`;
+                    resultsCountDiv.innerHTML = `<p class="results-count">${resultsCount} Recipes Found:</p>`;
                     document.getElementById("answer-box").appendChild(resultsCountDiv);
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
