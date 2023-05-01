@@ -72,6 +72,12 @@ def sql_search(ingredient):
         if found == False:
             for recipe_id in inv_idx[ingredient]:
                 recipe_scores[recipe_id] = idf[ingredient] * 2 + recipe_scores.get(recipe_id, 0)
+    
+    for id in recipe_scores:
+        matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
+        rating = matching_recipe["AvgRecipeRating"]
+        recipe_scores[id] = recipe_scores[id] * rating
+    
     sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
 
     results = []
