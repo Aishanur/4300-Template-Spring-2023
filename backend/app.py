@@ -138,7 +138,7 @@ def update_recommendations():
 
     # get the new recipes here
     # dict of 10 (recipe_id, ingredient vector) pairs
-    new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles)
+    new_recipes = recommend_recipes(liked_titles, disliked_titles)
 
     results = []
     for id in new_recipes.keys():
