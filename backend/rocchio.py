@@ -1,6 +1,6 @@
 import numpy as np
 from app import recipes_data
-from sklearn.feature_extraction.text import TfidfVectorize
+from sklearn.feature_extraction.text import TfidfVectorizer
 import text
 
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
