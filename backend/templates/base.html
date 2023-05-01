@@ -45,11 +45,11 @@
 
     <script>
 
-        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber) {
+        function answerBoxTemplate(title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber, count) {
             return `<div class='recipe'>
         <h3 class='recipe-title'>${title}</h3>
         <p class='recipe-desc'>Ingredients: ${titleDesc}</p>
-        <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)}</p>
+        <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)} from ${count} reviews</p>
         <div class="nutrition-toggle">
             <button onclick="toggleNutritionTable(this)">Show Nutrition Information</button>
       <table class="hide-nutrition"><thead>
@@ -100,8 +100,6 @@
 </table>
         <button onclick="showInstructions(this)">Show Recipe Instructions</button>
         <div class='recipe-instructions hidden'>${instructions}</div>
-        <button onclick="showReviews(this)">Show Recipe Reviews</button>
-        <div class='recipe-reviews hidden'>${reviews}</div>
          <button id="like" onclick="likeRecipe(this)"><i class="fa fa-thumbs-up"></i></button>
     <button id="dislike" onclick="dislikeRecipe(this)"><i class="fa fa-thumbs-down"></i></button>
     </div>`
@@ -174,16 +172,16 @@
             }
         }
 
-        function showReviews(button) {
-            const reviews = button.nextElementSibling;
-            if (reviews.classList.contains('hidden')) {
-                reviews.classList.remove('hidden');
-                button.textContent = 'Hide Recipe Reviews';
-            } else {
-                reviews.classList.add('hidden');
-                button.textContent = 'Show Recipe Reviews';
-            }
-        }
+        // function showReviews(button) {
+        //     const reviews = button.nextElementSibling;
+        //     if (reviews.classList.contains('hidden')) {
+        //         reviews.classList.remove('hidden');
+        //         button.textContent = 'Hide Recipe Reviews';
+        //     } else {
+        //         reviews.classList.add('hidden');
+        //         button.textContent = 'Show Recipe Reviews';
+        //     }
+        // }
         function filterText() {
             // Get the input element
             const input = document.getElementById('filter-text-val');
@@ -232,7 +230,7 @@
                     // add new recipes
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
@@ -276,7 +274,7 @@
                     document.getElementById("answer-box").appendChild(resultsCountDiv);
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
+                        tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
