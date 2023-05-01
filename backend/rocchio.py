@@ -62,6 +62,9 @@ def rocchio(query_vec, relevant, irrelevant, np_matrix, a=.3, b=.3, c=.8, clip =
     len_rel = len(relevant)
     len_irrel = len(irrelevant)
 
+    print("Shape and dtype of agg_rel:", agg_rel.shape, agg_rel.dtype)
+    print("Shape and dtype of agg_irrel:", agg_irrel.shape, agg_irrel.dtype)
+
     for i in range(len_rel):
         agg_rel += relevant[i]
     
@@ -139,3 +142,27 @@ def top10_with_rocchio(query_vec, relevant, irrelevant, tfidf_matrix, input_rocc
         rocc_rankings.update({ recipe_no: tfidf_matrix[recipe_no]})
 
     return rocc_rankings
+
+def recommend_recipes(liked_recipes, disliked_recipes, tfidf_matrix, recipe_id_to_index, recipe_name_to_id):
+  # relevant list is the list of pairs (ingredient id, ingredient vector)
+  # irrelevant list is the list of pairs (ingredient id, ingredient vector)
+  relevant_lst = []
+  irrelevant_lst = []
+
+  print(liked_recipes)
+  for liked_recipe_name in liked_recipes:
+      print(liked_recipe_name)
+      liked_recipe_id = recipe_name_to_id[liked_recipe_name]
+      recipe_index = recipe_id_to_index[liked_recipe_id]
+      ingredient_vector = tfidf_matrix[recipe_index]
+      relevant_lst.append((liked_recipe_id, ingredient_vector))
+
+  for disliked_recipe_name in disliked_recipes:
+      disliked_recipe_id = recipe_name_to_id[disliked_recipe_name]
+      recipe_index = recipe_id_to_index[disliked_recipe_id]
+      ingredient_vector = tfidf_matrix[recipe_index]
+      irrelevant_lst.append((disliked_recipe_id, ingredient_vector))
+
+  query_tpl = random.choice(relevant_lst)
+  
+  return top10_with_rocchio(query_tpl[1], relevant_lst, irrelevant_lst, tfidf_matrix, rocchio)

@@ -101,28 +101,6 @@ recipe_name_to_id = {recipe_name:recipe_id for recipe_name, recipe_id in zip([d[
 # tfidf matrix with X rows (representing recipes) and Y columns (representing ingredients)
 tf_idf_matrix = rocchio.tf_idf(recipe_id_to_ingredients)
 
-def recommend_recipes(liked_recipes, disliked_recipes):
-    relevant_lst = []
-    irrelevant_lst = []
-
-    # print(liked_recipes)
-    for liked_recipe_name in liked_recipes:
-        liked_recipe_id = recipe_name_to_id[liked_recipe_name]
-        recipe_index = recipe_id_to_index[liked_recipe_id]
-        ingredient_vector = tfidf_matrix[recipe_index]
-        relevant_lst.append((liked_recipe_id, ingredient_vector))
-
-    for disliked_recipe_name in disliked_recipes:
-        disliked_recipe_id = recipe_name_to_id[disliked_recipe_name]
-        recipe_index = recipe_id_to_index[disliked_recipe_id]
-        ingredient_vector = tfidf_matrix[recipe_index]
-        irrelevant_lst.append((disliked_recipe_id, ingredient_vector))
-
-    query_tpl = random.choice(relevant_lst)
-    
-    return top10_with_rocchio(query_tpl[1], relevant_lst, irrelevant_lst, tf_idf_matrix, rocchio.rocchio)
-
-
 @app.route("/")
 def home():
     return render_template('base.html',title="sample html")
@@ -142,7 +120,7 @@ def update_recommendations():
     print(disliked_titles)
     # get the new recipes here
     # dict of 10 (recipe_id, ingredient vector) pairs
-    new_recipes = recommend_recipes(liked_titles, disliked_titles)
+    new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles, tf_idf_matrix, recipe_id_to_index, recipe_name_to_id)
 
     results = []
     for id in new_recipes.keys():
