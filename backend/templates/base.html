@@ -221,7 +221,7 @@
             const dislikedTitles = Array.from(dislikedRecipes).map(recipe => recipe.closest(".recipe").querySelector(".recipe-title").textContent);
 
             // make API call with the liked and disliked titles to get new recipes
-            fetch("/episodes?" + new URLSearchParams({ likedTitles: likedTitles.join(","), dislikedTitles: dislikedTitles.join(",") }).toString())
+            fetch("/recommender?" + new URLSearchParams({ likedTitles: likedTitles.join(","), dislikedTitles: dislikedTitles.join(",") }).toString())
                 .then((response) => response.json())
                 .then((data) => {
                     // clear existing recipes
@@ -240,23 +240,6 @@
             document.getElementById('filter-text-val').focus()
         }
 
-
-        // function search() {
-        //     const filterText = document.getElementById("filter-text-val").value;
-        //     if (!filterText) {
-        //         alert("Please enter ingredients to search for recipes!");
-        //         return;
-        //     }
-        //     const searchValue = document.getElementById("filter-text-val").value;
-        //     document.getElementById("answer-box").innerHTML = "";
-        //     fetch("/episodes?" + new URLSearchParams({ title: searchValue }).toString())
-        //         .then((response) => response.json())
-        //         .then((data) => data.forEach(row => {
-        //             let tempDiv = document.createElement("div");
-        //             tempDiv.innerHTML = answerBoxTemplate(row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent);
-        //             document.getElementById("answer-box").appendChild(tempDiv);
-        //         }));
-        // }
         function search() {
             const filterText = document.getElementById("filter-text-val").value;
             if (!filterText) {
