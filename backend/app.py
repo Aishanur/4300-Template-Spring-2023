@@ -121,10 +121,12 @@ def update_recommendations():
     # get the new recipes here
     # dict of 10 (recipe_id, ingredient vector) pairs
     new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles, tf_idf_matrix, recipe_id_to_index, recipe_name_to_id)
+    print(new_recipes.values())
 
     results = []
     for id in new_recipes.keys():
         matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
+        print(matching_recipe)
         ingredient_parts = matching_recipe["RecipeIngredientParts"]
         ingredients = text.remove_c_parantheses(ingredient_parts)
         matching_recipe["RecipeIngredientParts"] = ingredients
