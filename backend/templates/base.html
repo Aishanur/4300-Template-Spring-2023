@@ -217,7 +217,7 @@
             console.log(dislikedTitles)
 
             // make API call with the liked and disliked titles to get new recipes
-            fetch("/recommender?" + new URLSearchParams({ likedTitles: likedTitles.join(","), dislikedTitles: dislikedTitles.join(",") }).toString())
+            fetch("/recommender?" + new URLSearchParams({ likedTitles: likedTitles.join(";"), dislikedTitles: dislikedTitles.join(";") }).toString())
                 .then((response) => response.json())
                 .then((data) => {
                     // clear existing recipes

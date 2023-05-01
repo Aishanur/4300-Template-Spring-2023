@@ -105,6 +105,7 @@ def recommend_recipes(liked_recipes, disliked_recipes):
     relevant_lst = []
     irrelevant_lst = []
 
+    # print(liked_recipes)
     for liked_recipe_name in liked_recipes:
         liked_recipe_id = recipe_name_to_id[liked_recipe_name]
         recipe_index = recipe_id_to_index[liked_recipe_id]
@@ -133,9 +134,12 @@ def episodes_search():
 
 @app.route("/recommender")
 def update_recommendations():
-    liked_titles = request.args.get("likedTitles").split(',')
-    disliked_titles = request.args.get("dislikedTitles").split(',')
-
+    liked_titles = request.args.get("likedTitles").split(';')
+    disliked_titles = request.args.get("dislikedTitles").split(';')
+    print("These are the liked titles")
+    print(liked_titles)
+    print("These are the disliked titles")
+    print(disliked_titles)
     # get the new recipes here
     # dict of 10 (recipe_id, ingredient vector) pairs
     new_recipes = recommend_recipes(liked_titles, disliked_titles)
