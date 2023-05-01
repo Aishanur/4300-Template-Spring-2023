@@ -9,6 +9,7 @@ from edit_distance import edit_distance_search
 import re
 import text
 import preprocessing
+import rocchio
 
 load_dotenv()
 
@@ -94,5 +95,28 @@ def home():
 def episodes_search():
     text = request.args.get("title")
     return sql_search(text)
+
+@app.route("/recommender")
+def update_recommendations():
+    liked_titles = request.args.get("likedTitles").split(',')
+    disliked_titles = request.args.get("dislikedTitles").split(',')
+
+    # get the new recipes here
+    # dict of 10 (recipe_id, ingredient vector) pairs
+    new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles)
+
+    results = []
+    for id in new_recipes.keys():
+        matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
+        ingredient_parts = matching_recipe["RecipeIngredientParts"]
+        ingredients = text.remove_c_parantheses(ingredient_parts)
+        matching_recipe["RecipeIngredientParts"] = ingredients
+        instructions_ = matching_recipe["RecipeInstructions"]
+        instructions = text.remove_c_parantheses(instructions_)
+        matching_recipe["RecipeInstructions"] = instructions
+        results.append(matching_recipe)
+
+    return json.dumps(results)
+
 
 #app.run(debug=True)
