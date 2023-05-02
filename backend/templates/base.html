@@ -217,7 +217,12 @@
             console.log(dislikedRecipes)
             console.log(likedTitles)
             console.log(dislikedTitles)
-
+            
+            const selectedRecipes = document.querySelectorAll(".btn-selected");
+            if (selectedRecipes.length === 0) {
+                alert("Please provide more feedback before refreshing!");
+                return;
+            }
             // make API call with the liked and disliked titles to get new recipes
             fetch("/recommender?" + new URLSearchParams({ likedTitles: likedTitles.join(";"), dislikedTitles: dislikedTitles.join(";") }).toString())
                 .then((response) => response.json())
