@@ -51,13 +51,19 @@
             const ingredientCount = ingredients.length;
 
             let quantities = quant.slice(2).replace(/[()]/g, '').split(',').map(x => x.trim());
+            console.log(quantities)
             let quantity_list = [];
 
             for (let q of quantities) {
                 if (q === 'NA') {
                     quantity_list.push('');
                 } else {
-                    quantity_list.push(q.split('/')[0]);
+                    let quantity = q.split('/')[0];
+                    if (q.includes('/')) {
+                        let fraction = q.split('/')[1];
+                        quantity += `/${fraction}`;
+                    }
+                    quantity_list.push(quantity);
                 }
             }
 
@@ -65,9 +71,9 @@
 
             for (let [i, q] of ingredients.entries()) {
                 if (quantity_list[i]) {
-                    ingredient_list.push(' '+ quantity_list[i] + ' ' + q);
+                    ingredient_list.push(' ' + quantity_list[i] + ' ' + q);
                 } else {
-                    ingredient_list.push(' '+ q);
+                    ingredient_list.push(' ' + q);
                 }
             }
 
