@@ -47,9 +47,11 @@
 
 
         function answerBoxTemplate(id, title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber, count) {
+            const ingredients = titleDesc.split(',').map((ingredient) => ingredient.trim());
+            const ingredientCount = ingredients.length;
             return `<div id="recipe-${id}" class='recipe'>
         <h3 class='recipe-title'>${title}</h3>
-        <p class='recipe-desc'>Ingredients: ${titleDesc}</p>
+        <p class='recipe-desc'> ${ingredientCount} Ingredients: ${titleDesc}</p>
         <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)} from ${count} reviews</p>
         <div class="nutrition-toggle">
             <button onclick="toggleNutritionTable(this)">Show Nutrition Information</button>
