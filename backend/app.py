@@ -44,7 +44,7 @@ ingredients_set = preprocessing.get_all_ingredients(recipes_list)
 inv_idx = preprocessing.build_inv_idx(recipes_list, ingredients_set)
 
 idf = preprocessing.compute_idf(inv_idx)
-   
+
 def sql_search(ingredient): 
     # Run the SQL query to retrieve matching recipes
     # Get the ingredients from the input
@@ -78,8 +78,8 @@ def sql_search(ingredient):
         rating = matching_recipe["AvgRecipeRating"]
         recipe_scores[id] = recipe_scores[id] * rating
     
+    # recipe_scores.items is a tuple list [(recipe id, recipe score)]
     sorted_scores = sorted(recipe_scores.items(), key=lambda x: x[1], reverse=True)
-
     results = []
     for i in range(min(len(sorted_scores), 10)):
         id = sorted_scores[i][0]
@@ -95,6 +95,8 @@ def sql_search(ingredient):
 
 # Here, we will assign an index for each RecipeId. This index will help us access data in numpy matrices.
 recipe_id_to_index = {recipe_id:index for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
+
+recipe_index_to_id = {index:recipe_id for index, recipe_id in enumerate([d['RecipeId'] for d in recipes_data])}
 
 # We will also need a dictionary mapping recipe ids to ingredients
 recipe_id_to_ingredients = {recipeid:ingredients for recipeid, ingredients in zip([d['RecipeId'] for d in recipes_data],
@@ -120,19 +122,15 @@ def episodes_search():
 def update_recommendations():
     liked_titles = request.args.get("likedTitles").split(';')
     disliked_titles = request.args.get("dislikedTitles").split(';')
-    print("These are the liked titles")
-    print(liked_titles)
-    print("These are the disliked titles")
-    print(disliked_titles)
-    # get the new recipes here
-    # dict of 10 (recipe_id, ingredient vector) pairs
-    new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles, tf_idf_matrix, recipe_id_to_index, recipe_name_to_id)
-    print(new_recipes.values())
 
     results = []
-    for id in new_recipes.keys():
+
+    # get the new recipes here
+    # new_recipes is the list of ids of the top 10 recipes
+    new_recipes = rocchio.recommend_recipes(liked_titles, disliked_titles, tf_idf_matrix, recipe_id_to_index, recipe_name_to_id, recipe_index_to_id)
+
+    for id in new_recipes:
         matching_recipe = next((d for d in recipes_list if d["RecipeId"] == id), None)
-        print(matching_recipe)
         ingredient_parts = matching_recipe["RecipeIngredientParts"]
         ingredients = text.remove_c_parantheses(ingredient_parts)
         matching_recipe["RecipeIngredientParts"] = ingredients
@@ -142,7 +140,5 @@ def update_recommendations():
         results.append(matching_recipe)
 
     return json.dumps(results)
-
-
 
 #app.run(debug=True)
