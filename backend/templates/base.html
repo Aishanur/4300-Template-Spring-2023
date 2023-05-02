@@ -46,40 +46,13 @@
     <script>
 
 
-        function answerBoxTemplate(id, title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber, count, quant) {
+        function answerBoxTemplate(id, title, titleDesc, rating, instructions, reviews, calorie, fat, saturatedfat, sugar, protein, sodium, cholesterol, carbohydrate, fiber, count) {
             const ingredients = titleDesc.split(',').map((ingredient) => ingredient.trim());
             const ingredientCount = ingredients.length;
 
-            let quantities = quant.slice(2).replace(/[()]/g, '').split(',').map(x => x.trim());
-            console.log(quantities)
-            let quantity_list = [];
-
-            for (let q of quantities) {
-                if (q === 'NA') {
-                    quantity_list.push('');
-                } else {
-                    let quantity = q.split('/')[0];
-                    if (q.includes('/')) {
-                        let fraction = q.split('/')[1];
-                        quantity += `/${fraction}`;
-                    }
-                    quantity_list.push(quantity);
-                }
-            }
-
-            let ingredient_list = [];
-
-            for (let [i, q] of ingredients.entries()) {
-                if (quantity_list[i]) {
-                    ingredient_list.push(' ' + quantity_list[i] + ' ' + q);
-                } else {
-                    ingredient_list.push(' ' + q);
-                }
-            }
-
             return `<div id="recipe-${id}" class='recipe'>
         <h3 class='recipe-title'>${title}</h3>
-        <p class='recipe-desc'> ${ingredientCount} Ingredients: ${ingredient_list}</p>
+        <p class='recipe-desc'> ${ingredientCount} Ingredients: ${titleDesc}</p>
         <p class= 'ratings-desc'>Rating: ${rating.toFixed(1)} from ${count} reviews</p>
         <div class="nutrition-toggle">
             <button onclick="toggleNutritionTable(this)">Show Nutrition Information</button>
@@ -261,7 +234,7 @@
                     // add new recipes
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.RecipeId, row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount, row.RecipeIngredientQuantities);
+                        tempDiv.innerHTML = answerBoxTemplate(row.RecipeId, row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
@@ -288,7 +261,7 @@
                     document.getElementById("answer-box").appendChild(resultsCountDiv);
                     data.forEach(row => {
                         let tempDiv = document.createElement("div");
-                        tempDiv.innerHTML = answerBoxTemplate(row.RecipeId, row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount, row.RecipeIngredientQuantities);
+                        tempDiv.innerHTML = answerBoxTemplate(row.RecipeId, row.Name, row.RecipeIngredientParts, row.AvgRecipeRating, row.RecipeInstructions, row.Review, row.Calories, row.FatContent, row.SaturatedFatContent, row.SugarContent, row.ProteinContent, row.SodiumContent, row.CholesterolContent, row.CarbohydrateContent, row.FiberContent, row.ReviewCount);
                         document.getElementById("answer-box").appendChild(tempDiv);
                     });
                 });
