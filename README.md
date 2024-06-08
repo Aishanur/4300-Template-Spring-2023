@@ -1,4 +1,4 @@
-# Pantry Pal
+# Pantry Pal 🍲
 
 ## Overview
 
